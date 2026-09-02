@@ -1,0 +1,32 @@
+# Autotools generated
+Makefile
+Makefile.in
+/aclocal.m4
+/autom4te.cache/
+/build-aux/
+/config.h
+/config.h.in
+/config.h.in~
+/config.log
+/config.status
+/configure
+/configure~
+/stamp-h1
+.deps/
+.dirstamp
+/m4/l*.m4
+/m4/lt*.m4
+
+# Build products
+*.o
+*.a
+*.lo
+*.la
+.libs/
+/src/native
+/tests/test_native
+*.log
+*.trs
+
+# Distribution
+/native-*.tar.*

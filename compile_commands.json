@@ -1,0 +1,26 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-DHAVE_CONFIG_H",
+      "-I.",
+      "-I..",
+      "-I..",
+      "-I..",
+      "-I/usr/local/include",
+      "-Wall",
+      "-Wextra",
+      "-fmacro-prefix-map=/home/aidankeefe/Coding/c-projects/Native/=",
+      "-g",
+      "-O2",
+      "-std=c23",
+      "-c",
+      "-o",
+      "native.o",
+      "native.c"
+    ],
+    "directory": "/home/aidankeefe/Coding/c-projects/Native/src",
+    "file": "/home/aidankeefe/Coding/c-projects/Native/src/native.c",
+    "output": "/home/aidankeefe/Coding/c-projects/Native/src/native.o"
+  }
+]
