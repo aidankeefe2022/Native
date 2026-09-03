@@ -1,6 +1,6 @@
-#include <../external_headers/protectedThread.h>
 #include <stdio.h>
 #include <threads.h>
+#include <external_headers/syscall.h>
 
 int threadRun(void* ctx) {
     const char* string = ctx;
@@ -10,8 +10,6 @@ int threadRun(void* ctx) {
 
 int run(void) {
     printf("This is a test program");
-    nat_SafeThread* thread = NULL;
-    native_threadCreate(thread, threadRun, "this is my ctx");
-    native_threadJoin(thread, NULL);
+    nat_pushToSyscallQueue(nat_logError_e, "This is my error");
     return 0;
 }

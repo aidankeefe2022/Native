@@ -1,8 +1,9 @@
 #include <stdint.h>
+#include <stdio.h>
 
 typedef struct Native_LogQueue Native_LogQueue;
 
-int32_t native_addLog(const char* fmt, ...);
+int nat_logError(FILE* stream, const char* fmt, ...);
 
 
 

@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <native/native.h>
+#include <internal_headers/native.h>
 
 #include "testing.c"
 

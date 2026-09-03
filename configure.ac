@@ -1,6 +1,6 @@
 AC_PREREQ([2.69])
 AC_INIT([native], [0.1.0], [aidankeefe486@gmail.com])
-AC_CONFIG_SRCDIR([src/main.c])
+AC_CONFIG_SRCDIR([privileged_src/main.c])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIRS([m4])
 AC_CONFIG_HEADERS([config.h])
@@ -76,6 +76,7 @@ AC_SUBST([MACRO_PREFIX_MAP_CFLAGS])
 AC_CONFIG_FILES([
   Makefile
   src/Makefile
+  privileged_src/Makefile
   tests/Makefile
 ])
 
