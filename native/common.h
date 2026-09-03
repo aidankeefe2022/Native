@@ -25,4 +25,11 @@ typedef double f64;
 #define GiB(x) ((uint64_t)(x) << 30)
 #define TiB(x) ((uint64_t)(x) << 40)
 
+
+/* ------ Error Codes ----- */
+
+enum ErrorCodes {
+    nat_MemError = -1,
+};
+
 #endif //WOLFHTTPS_COMMON_H

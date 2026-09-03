@@ -1,4 +1,4 @@
-#include "../native/native.h"
+#include <../external_headers/protectedThread.h>
 #include <stdio.h>
 #include <threads.h>
 
@@ -10,8 +10,8 @@ int threadRun(void* ctx) {
 
 int run(void) {
     printf("This is a test program");
-    thrd_t thread = {0};
-    thrd_create(&thread, threadRun, "this is my ctx");
-    thrd_join(thread, NULL);
+    nat_SafeThread* thread = NULL;
+    native_threadCreate(thread, threadRun, "this is my ctx");
+    native_threadJoin(thread, NULL);
     return 0;
 }

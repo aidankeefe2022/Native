@@ -4,8 +4,7 @@ AM_CPPFLAGS += $(WOLFSSL_CFLAGS)
 
 # Core logic lives in a convenience library so tests can link against it.
 noinst_LIBRARIES = libnative.a
-libnative_a_SOURCES = \
-	native.c
+libnative_a_SOURCES = native.c \
 
 bin_PROGRAMS = native
 native_SOURCES = main.c
