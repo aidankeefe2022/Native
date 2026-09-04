@@ -16,9 +16,10 @@
 #include <string.h>
 #include <seccomp.h>
 
-#include <native/native.h>
-#include <native/common.h>
+#include <external_headers/native.h>
+#include <internal_headers/common.h>
 #include <external_headers/protectedThread.h>
+#include <internal_headers/syscall.h>
 
 /* Shared library one level up from this project, referenced relative to the
    directory the binary is launched from.  Adjust if you run from elsewhere. */
@@ -30,7 +31,13 @@ struct SpawnSafeThreadWithEntry_CTX {
 
 static i32 SpawnSafeThreadWithEntry(void* ctx) {
     struct SpawnSafeThreadWithEntry_CTX* stCtx = ctx;
-    return stCtx->entry();
+
+    // runForignProgram has already returned by the time this runs, so the
+    // context is heap allocated: unpack it and hand the memory back here.
+    ProgramEntry entry = stCtx->entry;
+    free(stCtx);
+
+    return entry();
 }
 
 struct ForignProgram_CTX {
@@ -66,10 +73,26 @@ static struct ForignProgram_CTX runForignProgram(int fd){
         return (struct ForignProgram_CTX){.isError = 1};
     }
 
-    // Use the function pointer normally.
-    struct SpawnSafeThreadWithEntry_CTX stCtx = {.entry = forignRun};
+    // Use the function pointer normally.  The new thread outlives this frame,
+    // so its context is heap allocated and freed by the thread itself.
+    struct SpawnSafeThreadWithEntry_CTX* stCtx = malloc(sizeof(*stCtx));
+    if (stCtx == NULL) {
+        dlclose(handle);
+        return (struct ForignProgram_CTX){.isError = 1};
+    }
+    stCtx->entry = forignRun;
+
     nat_SafeThread* sf_thrd = NULL;
-    native_threadCreate(sf_thrd, SpawnSafeThreadWithEntry, &stCtx);
+    struct nat_SafeThread_CreateArg createArg = {
+        .thread = &sf_thrd,
+        .callback = SpawnSafeThreadWithEntry,
+        .ctx = stCtx,
+    };
+    if (nat_threadCreate(&createArg) != 0) {
+        free(stCtx);
+        dlclose(handle);
+        return (struct ForignProgram_CTX){.isError = 1};
+    }
 
     return (struct ForignProgram_CTX){
         .prog_handle = handle,
@@ -162,17 +185,29 @@ int native_run(void) {
     wolfSSL_CTX_free(ctx);
     wolfSSL_Cleanup();
     close(sockfd);
-
+    nat_SyscallQueue = malloc(sizeof(*nat_SyscallQueue) +
+            (sizeof(struct nat_Syscall_Request*) * 20));
+    assert(nat_SyscallQueue);
+    *nat_SyscallQueue = (struct nat_SyscallQueue){
+        .cap = 20,
+        .len = 0,
+        .nextUp = 0,
+        .nextFree = 0,
+    };
     struct ForignProgram_CTX forignProgramCtx = runForignProgram(fd);
+    printf("running program!\n");
+    fflush(stdout);
     if (forignProgramCtx.isError) {
-        // TODO: Error Here
+        printf("Error");
     }
     int running = 1;
     while (running) {
-
-
+        mtx_lock(&nat_SyscallMutex);
+        while (nat_SyscallQueue->len > 0) {
+            nat_runSyscallRequest(nat_getNextSyscall());
+        }
+        mtx_unlock(&nat_SyscallMutex);
     }
-    if (
 
 
     return EXIT_SUCCESS;

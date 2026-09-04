@@ -1,7 +1,7 @@
-#ifndef NATIVE_H
-#define NATIVE_H
+#ifndef INTERNAL_NATIVE_NATIVE_H
+#define INTERNAL_NATIVE_NATIVE_H
 
 #include <external_headers/native.h>
 #include <internal_headers/common.h>
 
-#endif /* NATIVE_H */
+#endif /* INTERNAL_NATIVE_NATIVE_H */

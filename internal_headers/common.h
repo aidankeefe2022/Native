@@ -31,6 +31,9 @@ typedef double f64;
 enum ErrorCodes {
     nat_MemError = -1,
     nat_BadFuncError = -2,
+    /* Syscall could not complete yet; the caller should retry.  Used by
+       nat_threadJoin so the dispatch loop never parks in a blocking join. */
+    nat_WouldBlock = -3,
 };
 
 #endif //WOLFHTTPS_COMMON_H

@@ -1,10 +1,9 @@
-#include <stdint.h>
-#include <stdio.h>
+#ifndef NATIVE_LOGGING_E_H
+#define NATIVE_LOGGING_E_H
 
-typedef struct Native_LogQueue Native_LogQueue;
+int nat_logErrorI(const char* fmt, ...);
 
-int nat_logError(FILE* stream, const char* fmt, ...);
-
+#endif
 
 
 

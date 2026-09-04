@@ -75,8 +75,8 @@ AC_SUBST([MACRO_PREFIX_MAP_CFLAGS])
 
 AC_CONFIG_FILES([
   Makefile
-  src/Makefile
   privileged_src/Makefile
+  testBench/Makefile
   tests/Makefile
 ])
 

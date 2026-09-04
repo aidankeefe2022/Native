@@ -30,3 +30,5 @@ Makefile.in
 
 # Distribution
 /native-*.tar.*
+/testBench/testProg.so
+/privileged_src/native
