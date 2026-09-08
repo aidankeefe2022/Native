@@ -21,12 +21,9 @@
 #include <external_headers/protectedThread.h>
 #include <internal_headers/syscall.h>
 
-/* Shared library one level up from this project, referenced relative to the
-   directory the binary is launched from.  Adjust if you run from elsewhere. */
-#define SHARED_LIB_PATH "../newLibs/.libs/libAidan.so"
-
 struct SpawnSafeThreadWithEntry_CTX {
     ProgramEntry entry;
+    nat_SafeThread* self;
 };
 
 static i32 SpawnSafeThreadWithEntry(void* ctx) {
@@ -35,9 +32,13 @@ static i32 SpawnSafeThreadWithEntry(void* ctx) {
     // runForignProgram has already returned by the time this runs, so the
     // context is heap allocated: unpack it and hand the memory back here.
     ProgramEntry entry = stCtx->entry;
+    nat_SafeThread* self = stCtx->self;
     free(stCtx);
 
-    return entry();
+    i32 ret = entry();
+    self->isRunning = 0;
+    return ret;
+
 }
 
 struct ForignProgram_CTX {
@@ -82,9 +83,10 @@ static struct ForignProgram_CTX runForignProgram(int fd){
     }
     stCtx->entry = forignRun;
 
-    nat_SafeThread* sf_thrd = NULL;
+    nat_SafeThread* sf_thrd = malloc(sizeof(*sf_thrd));
+    stCtx->self = sf_thrd;
     struct nat_SafeThread_CreateArg createArg = {
-        .thread = &sf_thrd,
+        .thread = sf_thrd,
         .callback = SpawnSafeThreadWithEntry,
         .ctx = stCtx,
     };
@@ -104,9 +106,10 @@ int native_run(void) {
 #define SERVER_PORT 8000
 #define SERVER_IP   "127.0.0.1"
 
+    mtx_init(&nat_SyscallMutex, mtx_plain);
+
     WOLFSSL_CTX* ctx = NULL;
     WOLFSSL*     ssl = NULL;
-    i32 askAgain = 0;
 
     /* 1. Initialize wolfSSL library */
     wolfSSL_Init();
@@ -200,14 +203,20 @@ int native_run(void) {
     if (forignProgramCtx.isError) {
         printf("Error");
     }
-    int running = 1;
-    while (running) {
+    while (forignProgramCtx.main_ForignThread->isRunning) {
         mtx_lock(&nat_SyscallMutex);
         while (nat_SyscallQueue->len > 0) {
             nat_runSyscallRequest(nat_getNextSyscall());
         }
         mtx_unlock(&nat_SyscallMutex);
+        sched_yield();
     }
+
+    thrd_join(forignProgramCtx.main_ForignThread->thread, NULL);
+
+    mtx_destroy(&nat_SyscallMutex);
+    free(forignProgramCtx.main_ForignThread);
+    dlclose(forignProgramCtx.prog_handle);
 
 
     return EXIT_SUCCESS;

@@ -3,13 +3,14 @@
 #include <internal_headers/syscall.h>
 #include <external_headers/protectedThread.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 
-i32 nat_SafeThread_CreateI(nat_SafeThread** safeThread,
-        nat_SafeThread_Callback cb, void* ctx)
+i32 nat_SafeThread_CreateI(thrd_t* safeThread,
+        thrd_start_t cb, void* ctx)
 {
     struct nat_SafeThread_CreateArg arg = {
-        .thread = safeThread,
+        .thread = &(nat_SafeThread){.thread = *safeThread},
         .callback = cb,
         .ctx = ctx,
     };
@@ -20,27 +21,7 @@ i32 nat_SafeThread_CreateI(nat_SafeThread** safeThread,
         return nat_MemError;
     }
     nat_waitSyscallRequest(req);
-    return 0;
-}
-
-i32 nat_SafeThread_JoinI(nat_SafeThread* safeThread, int* ret)
-{
-    struct nat_SafeThread_JoinArg arg = {
-        .thread = safeThread,
-        .ret = ret,
-    };
-    // The privileged side reports nat_WouldBlock rather than parking the
-    // dispatch loop in a blocking join, so poll until the thread has exited.
-    // Each request is freed here: the servicer is done with it once isReady
-    // is set, and this loop would otherwise leak one per attempt.
-    i32 ret_code;
-    nat_Syscall_Request* req = nat_pushToSyscallQueue(nat_threadJoin_e, &arg);
-    if (req == NULL) {
-        return nat_MemError;
-    }
-    nat_waitSyscallRequest(req);
-    ret_code = atomic_load(&req->returnVal);
     free(req);
-
-    return ret_code;
+    *safeThread = arg.thread->thread;
+    return 0;
 }

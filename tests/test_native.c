@@ -3,7 +3,6 @@
 #endif
 
 #include <stdio.h>
-#include <string.h>
 
 #include <internal_headers/native.h>
 
@@ -12,11 +11,11 @@
 int main (void)
 {
     int tracker = 0;
-    test('Check If 1 is 1', tracker,
+    test('', tracker,
         check(1 == 1, "1 is not 1");
     )
 
-    test('Check Fail', tracker,
+    test('', tracker,
         checkAndQuit(1 == 1, "Fail");
     )
 

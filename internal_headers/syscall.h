@@ -13,12 +13,6 @@
 
 typedef struct nat_Syscall_Request nat_Syscall_Request;
 
-enum nat_Syscall_Type {
-    nat_threadCreate_e,
-    nat_threadJoin_e,
-    nat_logError_e,
-};
-
 extern mtx_t nat_SyscallMutex;
 
 struct nat_Syscall_Request {
@@ -31,11 +25,6 @@ struct nat_Syscall_Request {
             typeof(nat_threadCreate)* threadCreate;
             struct nat_SafeThread_CreateArg* arg;
         }threadCreate;
-        /* threadJoin Syscall */
-        struct {
-            typeof(nat_threadJoin)* threadJoin;
-            struct nat_SafeThread_JoinArg* arg;
-        }threadJoin;
         /* logError Syscall */
         struct {
             typeof(nat_logError)* logError;
