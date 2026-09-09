@@ -16,7 +16,7 @@ i32 nat_SafeThread_CreateI(thrd_t* safeThread,
     };
     // arg lives on this stack, and the privileged thread dereferences it when
     // it pops the request, so this has to block until the syscall has run.
-    auto req = nat_pushToSyscallQueue(nat_threadCreate_e, &arg);
+    auto req = nat_pushToSyscallQueue(&nat_threadCreate, &arg);
     if (req == NULL) {
         return nat_MemError;
     }

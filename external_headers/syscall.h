@@ -7,7 +7,7 @@ enum nat_Syscall_Type {
 };
 
 typedef struct nat_Syscall_Request nat_Syscall_Request;
-nat_Syscall_Request* nat_pushToSyscallQueue(enum nat_Syscall_Type type, void* arg);
+nat_Syscall_Request* nat_pushToSyscallQueue(void* funcPtr, void* arg);
 int nat_checkSyscallRequest(nat_Syscall_Request* request);
 void nat_waitSyscallRequest(nat_Syscall_Request* request);
 #endif

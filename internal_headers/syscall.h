@@ -16,21 +16,10 @@ typedef struct nat_Syscall_Request nat_Syscall_Request;
 extern mtx_t nat_SyscallMutex;
 
 struct nat_Syscall_Request {
-    enum nat_Syscall_Type func_type;
+    void* funcPtr;
+    void* arg;
     atomic_bool isReady;
     atomic_int returnVal;
-    union {
-        /* threadJoin Syscall */
-        struct {
-            typeof(nat_threadCreate)* threadCreate;
-            struct nat_SafeThread_CreateArg* arg;
-        }threadCreate;
-        /* logError Syscall */
-        struct {
-            typeof(nat_logError)* logError;
-            struct nat_logErrorArg* arg;
-        }logError;
-    };
 };
 
 struct nat_SyscallQueue {
