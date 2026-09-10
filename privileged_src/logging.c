@@ -9,5 +9,7 @@ i32 nat_logError(struct nat_logErrorArg* arg)
 {
     /* The caller blocks in nat_logErrorI until this returns, and calls va_end
        itself -- it owns the frame the va_list points into. */
-    return vfprintf(stderr, arg->fmt, arg->list);
+    int ret = vfprintf(stderr, arg->fmt, arg->list);
+    va_end(arg->list);
+    return ret;
 }

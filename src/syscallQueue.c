@@ -10,7 +10,7 @@ mtx_t nat_SyscallMutex;
 struct nat_SyscallQueue* nat_SyscallQueue;
 
 nat_Syscall_Request* nat_pushToSyscallQueue(void* funcPtr,
-        void* arg)
+         nat_Syscall_arg* arg)
 {
     nat_Syscall_Request* request = malloc(sizeof(*request));
     if (request == NULL) {
@@ -25,6 +25,7 @@ nat_Syscall_Request* nat_pushToSyscallQueue(void* funcPtr,
     if (nat_SyscallQueue->len == nat_SyscallQueue->cap) {
         mtx_unlock(&nat_SyscallMutex);
         free(request);
+        arg->cleanup(arg);
         return NULL;
         /*
         struct nat_SyscallQueue* tmp = realloc(&nat_SyscallQueue,
