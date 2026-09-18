@@ -2,8 +2,8 @@
 // Created by aidankeefe on 3/15/26.
 //
 
-#ifndef AIDAN_COMMON_H
-#define AIDAN_COMMON_H
+#ifndef NATIVE_COMMON_I_H
+#define NATIVE_COMMON_I_H
 
 #include <stdint.h>
 
@@ -36,4 +36,11 @@ enum ErrorCodes {
     nat_WouldBlock = -3,
 };
 
-#endif //WOLFHTTPS_COMMON_H
+
+/* ----- MACRO CONSTRUCTIONS ----- */
+
+#define Defer(statement) for (i32 _defer_name = 0; _defer_name < 1; _defer_name++, statement)
+#define DeferBreak continue
+
+
+#endif //NATIVE_COMMON_I_H

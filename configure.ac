@@ -52,7 +52,7 @@ AC_ARG_ENABLE([debug],
   [enable_debug=$enableval],
   [enable_debug=no])
 AS_IF([test "x$enable_debug" = "xyes"],
-  [CFLAGS="$CFLAGS -g3 -O0 -DDEBUG"])
+  [CFLAGS="$CFLAGS -g3 -O0 -DDEBUG -fsanitize=address"])
 AM_CONDITIONAL([DEBUG], [test "x$enable_debug" = "xyes"])
 
 CFLAGS="$CFLAGS -std=c23 -lseccomp"

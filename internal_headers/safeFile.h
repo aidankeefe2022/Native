@@ -3,10 +3,8 @@
 #include <internal_headers/common.h>
 
 struct nat_writeFileArg {
-    struct {
-        char* fileName;
-        u32   fileNameSz;
-    } file;
+    nat_Buffer fileName;
+    nat_Buffer data;
 };
 i32 nat_writeFile(struct nat_writeFileArg* arg);
 i32 nat_readFile(struct nat_writeFileArg* arg);

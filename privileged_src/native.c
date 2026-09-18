@@ -82,8 +82,9 @@ static struct ForignProgram_CTX runForignProgram(int fd){
         return (struct ForignProgram_CTX){.isError = 1};
     }
     stCtx->entry = forignRun;
-
+    thrd_t* thread = malloc(sizeof(*thread));
     nat_SafeThread* sf_thrd = malloc(sizeof(*sf_thrd));
+    sf_thrd->thread = thread;
     stCtx->self = sf_thrd;
     struct nat_SafeThread_CreateArg createArg = {
         .thread = sf_thrd,
@@ -212,9 +213,10 @@ int native_run(void) {
         sched_yield();
     }
 
-    thrd_join(forignProgramCtx.main_ForignThread->thread, NULL);
+    thrd_join(*forignProgramCtx.main_ForignThread->thread, NULL);
 
     mtx_destroy(&nat_SyscallMutex);
+    free(forignProgramCtx.main_ForignThread->thread);
     free(forignProgramCtx.main_ForignThread);
     dlclose(forignProgramCtx.prog_handle);
 

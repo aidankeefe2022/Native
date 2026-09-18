@@ -1,6 +1,5 @@
 #include <internal_headers/syscall.h>
 #include <stdlib.h>
-#include <stdio.h>
 #include <unistd.h>
 
 /* The single definitions behind the extern declarations in
@@ -25,7 +24,8 @@ nat_Syscall_Request* nat_pushToSyscallQueue(void* funcPtr,
     if (nat_SyscallQueue->len == nat_SyscallQueue->cap) {
         mtx_unlock(&nat_SyscallMutex);
         free(request);
-        arg->cleanup(arg);
+        if (arg->cleanup)
+            arg->cleanup(arg);
         return NULL;
         /*
         struct nat_SyscallQueue* tmp = realloc(&nat_SyscallQueue,

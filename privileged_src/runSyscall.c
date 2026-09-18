@@ -26,21 +26,26 @@ static const struct {
 };
 
 i32 nat_runSyscallRequest(nat_Syscall_Request* request) {
+    // request->arg is the client's nat_Syscall_arg wrapper; the handlers
+    // take the payload it carries.
+    void* arg = ((nat_Syscall_arg*)request->arg)->arg;
     for (u32 i = 0; i < sizeof(requestTypes) / sizeof(*requestTypes); i++) {
         if (request->funcPtr == requestTypes[i].funcPtr) {
             switch (requestTypes[i].type) {
                 case threadCreate: {
                     nat_threadCreate_t* func_ptr = request->funcPtr;
-                    atomic_store(&request->returnVal, func_ptr(request->arg));
+                    atomic_store(&request->returnVal, func_ptr(arg));
                     request->isReady = 1;
                     return 0;
                 }
                 case logError: {
                     nat_logError_t* func_ptr = request->funcPtr;
-                    atomic_store(&request->returnVal, func_ptr(request->arg));
+                    atomic_store(&request->returnVal, func_ptr(arg));
                     request->isReady = 1;
                     return 0;
                 }
+
+
                 default:
                     /* should never get here */
                     return nat_BadFuncError;

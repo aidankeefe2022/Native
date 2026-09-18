@@ -5,7 +5,7 @@
 #include <stdatomic.h>
 
 typedef struct nat_SafeThread {
-    thrd_t thread;
+    thrd_t* thread;
     atomic_bool isRunning;
 }nat_SafeThread;
 

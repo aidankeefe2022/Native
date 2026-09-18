@@ -105,7 +105,8 @@ static i32 CallbackWrapper(void* ctx) {
 }
 
 
-int32_t nat_threadCreate(struct nat_SafeThread_CreateArg *arg) {
+i32 nat_threadCreate(struct nat_SafeThread_CreateArg *arg) {
+
     if (arg->thread == NULL) {
         return nat_MemError;
     }
@@ -116,7 +117,7 @@ int32_t nat_threadCreate(struct nat_SafeThread_CreateArg *arg) {
     }
     *ctx = (struct CallbackWrapper_CTX){.callback = arg->callback, .arg = arg->ctx};
 
-    if (thrd_create(&arg->thread->thread, CallbackWrapper, ctx) != thrd_success) {
+    if (thrd_create(arg->thread->thread, CallbackWrapper, ctx) != thrd_success) {
         free(ctx);
         return nat_MemError;
     }
@@ -125,12 +126,12 @@ int32_t nat_threadCreate(struct nat_SafeThread_CreateArg *arg) {
     return 0;
 }
 
-int32_t nat_threadJoin(struct nat_SafeThread_JoinArg* arg) {
+i32 nat_threadJoin(struct nat_SafeThread_JoinArg* arg) {
     if (arg == NULL) {
         return nat_MemError;
     }
 
-    thrd_join(arg->thread.thread, arg->ret);
+    thrd_join(*arg->thread.thread, arg->ret);
 
     return 0;
 }
